@@ -1,4 +1,4 @@
 main: de.linzn.neuralFramework.NeuralFrameworkPlugin
 name: neural-framework
 version: ${project.version}
-depend: [ ]
+depend: [ home-devices ]
