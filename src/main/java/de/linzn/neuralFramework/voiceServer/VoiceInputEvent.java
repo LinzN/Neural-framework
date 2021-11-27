@@ -6,11 +6,11 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 public class VoiceInputEvent implements StemEvent {
-    private boolean isCanceled;
     private final JSONObject eventData;
     private final LinkedList<String> wordList;
+    private boolean isCanceled;
 
-    public VoiceInputEvent(JSONObject eventData, LinkedList<String> wordList){
+    public VoiceInputEvent(JSONObject eventData, LinkedList<String> wordList) {
         this.isCanceled = false;
         this.eventData = eventData;
         this.wordList = wordList;
@@ -30,7 +30,7 @@ public class VoiceInputEvent implements StemEvent {
         return eventData;
     }
 
-    public String getSpeechToTextData(){
+    public String getSpeechToTextData() {
         return this.eventData.getString("text");
     }
 

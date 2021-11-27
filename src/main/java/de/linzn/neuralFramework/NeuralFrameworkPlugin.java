@@ -12,6 +12,7 @@
 package de.linzn.neuralFramework;
 
 
+import de.linzn.neuralFramework.neuralStructure.NeuralEngine;
 import de.linzn.neuralFramework.voiceServer.VoiceServer;
 import de.stem.stemSystem.STEMSystemApp;
 import de.stem.stemSystem.modules.pluginModule.STEMPlugin;
@@ -19,11 +20,13 @@ import de.stem.stemSystem.modules.pluginModule.STEMPlugin;
 public class NeuralFrameworkPlugin extends STEMPlugin {
 
     public static NeuralFrameworkPlugin neuralFrameworkPlugin;
+    private NeuralEngine neuralEngine;
     private VoiceServer voiceServer;
 
     @Override
     public void onEnable() {
         neuralFrameworkPlugin = this;
+        this.neuralEngine = new NeuralEngine();
         setupVoiceServer();
         STEMSystemApp.getInstance().getEventModule().getStemEventBus().register(new TestListener());
     }
@@ -41,5 +44,9 @@ public class NeuralFrameworkPlugin extends STEMPlugin {
 
         this.voiceServer = new VoiceServer(host, port);
         this.voiceServer.openServer();
+    }
+
+    public NeuralEngine getNeuralEngine() {
+        return neuralEngine;
     }
 }

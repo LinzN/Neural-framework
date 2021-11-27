@@ -17,9 +17,9 @@ public class VoiceServer implements Runnable {
 
     private final String host;
     private final int port;
-    private Model model;
     ServerSocket server;
     Map<UUID, VoiceServerClient> voiceClients;
+    private Model model;
 
     public VoiceServer(String host, int port) {
         this.host = host;
@@ -35,7 +35,7 @@ public class VoiceServer implements Runnable {
             this.server.bind(new InetSocketAddress(this.host, this.port));
             STEMSystemApp.getInstance().getScheduler().runTask(NeuralFrameworkPlugin.neuralFrameworkPlugin, this);
         } catch (IOException e) {
-            e.printStackTrace();
+            STEMSystemApp.LOGGER.ERROR(e);
         }
     }
 
@@ -48,12 +48,12 @@ public class VoiceServer implements Runnable {
             }
             this.voiceClients.clear();
         } catch (IOException e) {
-            e.printStackTrace();
+            STEMSystemApp.LOGGER.ERROR(e);
         }
 
     }
 
-    private void loadModel(){
+    private void loadModel() {
         STEMSystemApp.LOGGER.CORE("Loading VOSK-API model start");
         this.model = new Model(NeuralFrameworkPlugin.neuralFrameworkPlugin.getDataFolder().getAbsolutePath() + "/model");
         STEMSystemApp.LOGGER.CORE("Loading VOSK-API model done");
