@@ -63,10 +63,12 @@ public class VoiceClientPipelineStream implements Runnable {
 
                                 if (!voiceInputEvent.isCanceled()) {
                                     NeuralProcessor neuralProcessor = NeuralFrameworkPlugin.neuralFrameworkPlugin.getNeuralEngine().createNeuralProcessor();
-                                    boolean status = neuralProcessor.submit(wordList);
+                                    neuralProcessor.submit(wordList);
+                                    boolean status = neuralProcessor.wasSuccess();
+                                    JSONObject completeData = neuralProcessor.getCompleteData();
                                     STEMSystemApp.LOGGER.DEBUG("NeuralProcessor task exit with status " + status);
                                 }
-                                this.setKeywordSpotted(false);
+                                this.setKeywordSpotted(false); //todo move higher
                             }
                         } else {
                             this.setKeywordSpotted(false);

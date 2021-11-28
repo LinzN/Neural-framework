@@ -2,6 +2,7 @@ package de.linzn.neuralFramework.neuralStructure.objects;
 
 import de.linzn.neuralFramework.neuralStructure.NeuralTask;
 import de.linzn.neuralFramework.neuralStructure.TaskDatabase;
+import de.stem.stemSystem.STEMSystemApp;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,16 +37,32 @@ public class NeuralObject {
     }
 
     public void registerCombination(NeuralCombination neuralCombination, long taskId) {
-        this.neuralCombinationSet.add(neuralCombination);
-        this.taskAssignment.put(neuralCombination.GET_COMBINATION_ID(), taskId);
+        if(neuralCombination != null) {
+            if(TaskDatabase.getTask(taskId) != null) {
+                this.neuralCombinationSet.add(neuralCombination);
+                this.taskAssignment.put(neuralCombination.GET_COMBINATION_ID(), taskId);
+            } else {
+                STEMSystemApp.LOGGER.ERROR("NeuralTask not found!");
+            }
+        } else {
+            STEMSystemApp.LOGGER.ERROR("NeuralCombination is NULL!");
+        }
     }
 
     public void registerLocation(NeuralLocation neuralLocation) {
-        this.neuralLocationSet.add(neuralLocation);
+        if(neuralLocation != null) {
+            this.neuralLocationSet.add(neuralLocation);
+        } else {
+            STEMSystemApp.LOGGER.ERROR("NeuralLocation is NULL!");
+        }
     }
 
     public void ADD_NAME(String name) {
-        this.nameSet.add(name.toLowerCase());
+        if(name != null && !name.isEmpty()) {
+            this.nameSet.add(name.toLowerCase());
+        } else {
+            STEMSystemApp.LOGGER.ERROR("Name is NULL or EMPTY");
+        }
     }
 
     public long GET_OBJECT_ID() {

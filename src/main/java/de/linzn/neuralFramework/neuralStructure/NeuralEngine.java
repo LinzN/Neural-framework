@@ -1,6 +1,5 @@
 package de.linzn.neuralFramework.neuralStructure;
 
-import de.linzn.neuralFramework.NeuralDatabaseLoader;
 import de.stem.stemSystem.STEMSystemApp;
 
 public class NeuralEngine {

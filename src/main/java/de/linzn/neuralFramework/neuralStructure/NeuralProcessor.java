@@ -12,13 +12,14 @@ public class NeuralProcessor {
 
     private final NeuralEngine neuralEngine;
     private JSONObject completeData;
+    private boolean success = false;
 
     NeuralProcessor(NeuralEngine neuralEngine) {
         this.neuralEngine = neuralEngine;
         STEMSystemApp.LOGGER.CONFIG("New NeuralProcessor loaded!");
     }
 
-    public boolean submit(List<String> input) {
+    public void submit(List<String> input) {
         NeuralObject neuralObject = null;
         NeuralCombination neuralCombination = null;
         NeuralLocation neuralLocation = null;
@@ -37,7 +38,7 @@ public class NeuralProcessor {
 
         if (neuralObject == null) {
             STEMSystemApp.LOGGER.DEBUG("No neuralObject found. Return");
-            return false;
+            return;
         }
 
         for (String word : input) {
@@ -50,7 +51,7 @@ public class NeuralProcessor {
 
         if (neuralCombination == null) {
             STEMSystemApp.LOGGER.DEBUG("No neuralCombination found. Return");
-            return false;
+            return;
         }
 
         for (String word : input) {
@@ -68,7 +69,7 @@ public class NeuralProcessor {
         neuralTask = neuralObject.searchTask(neuralCombination.GET_COMBINATION_ID());
         if (neuralTask == null) {
             STEMSystemApp.LOGGER.ERROR("No neuralTask found! Return");
-            return false;
+            return;
         }
 
         JSONObject jsonObject = new JSONObject();
@@ -77,14 +78,17 @@ public class NeuralProcessor {
         try {
             neuralTask.runTask(neuralObject, neuralCombination, neuralLocation, jsonObject);
             this.completeData = neuralTask.taskCompleteData();
-            return neuralTask.wasSuccess();
+            this.success = neuralTask.wasSuccess();
         } catch (Exception e) {
             STEMSystemApp.LOGGER.ERROR(e);
-            return false;
         }
     }
 
     public JSONObject getCompleteData() {
         return completeData;
+    }
+
+    public boolean wasSuccess() {
+        return success;
     }
 }

@@ -22,8 +22,12 @@ public class TaskDatabase {
     }
 
     private static void loadTask(NeuralTask neuralTask) {
-        STEMSystemApp.LOGGER.CONFIG("Load neuralTask " + neuralTask.GET_TASK_ID());
-        taskHashMap.put(neuralTask.GET_TASK_ID(), neuralTask);
+        if (!taskHashMap.containsKey(neuralTask.GET_TASK_ID())) {
+            STEMSystemApp.LOGGER.CONFIG("Load neuralTask " + neuralTask.GET_TASK_ID());
+            taskHashMap.put(neuralTask.GET_TASK_ID(), neuralTask);
+        } else {
+            STEMSystemApp.LOGGER.ERROR("NeuralTask " + neuralTask.GET_TASK_ID() + " already exist and loaded!");
+        }
     }
 
     public static NeuralTask getTask(long taskId) {

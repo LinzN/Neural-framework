@@ -1,6 +1,5 @@
-package de.linzn.neuralFramework;
+package de.linzn.neuralFramework.neuralStructure;
 
-import de.linzn.neuralFramework.neuralStructure.NeuralDatabase;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralCombination;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralLocation;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralObject;
@@ -20,9 +19,32 @@ public class NeuralDatabaseLoader {
     }
 
     public void loadDatabase() {
+        sqlite_table_check();
         sqlite_location_load();
         sqlite_combination_load();
         sqlite_object_load();
+    }
+
+    private void sqlite_table_check() {
+        try {
+            Connection connection = STEMSystemApp.getInstance().getDatabaseModule().getConnection();
+            Statement outerStatement = connection.createStatement();
+
+            String outerQuery = "";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_combination' ('id' INTEGER NOT NULL UNIQUE, 'description' TEXT, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_combination_names' ('id' INTEGER NOT NULL UNIQUE, 'combination_id' INTEGER NOT NULL, 'name' TEXT NOT NULL UNIQUE, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_location' ('id' INTEGER NOT NULL UNIQUE, 'description' TEXT, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_location_names' ('id' INTEGER NOT NULL UNIQUE, 'location_id' INTEGER NOT NULL, 'name' TEXT NOT NULL UNIQUE, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_object' ('id' INTEGER NOT NULL UNIQUE, 'description' TEXT, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_object_combination_assignment' ('id' INTEGER NOT NULL UNIQUE, 'object_id' INTEGER NOT NULL, 'combination_id'INTEGER NOT NULL, 'static_task_id' INTEGER NOT NULL, 'description' TEXT, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_object_location_assignment' ('id' INTEGER NOT NULL UNIQUE, 'object_id' INTEGER NOT NULL, 'location_id' INTEGER NOT NULL, 'description' TEXT, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerQuery += "CREATE TABLE IF NOT EXISTS 'neural_object_names' ('id' INTEGER NOT NULL UNIQUE, 'object_id' INTEGER NOT NULL, 'name' TEXT NOT NULL UNIQUE, PRIMARY KEY('id' AUTOINCREMENT));";
+            outerStatement.executeUpdate(outerQuery);
+            outerStatement.close();
+            STEMSystemApp.getInstance().getDatabaseModule().releaseConnection(connection);
+        } catch (SQLException e) {
+            STEMSystemApp.LOGGER.ERROR(e);
+        }
     }
 
     private void sqlite_location_load() {
