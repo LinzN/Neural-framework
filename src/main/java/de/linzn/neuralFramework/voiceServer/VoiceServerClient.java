@@ -3,6 +3,8 @@ package de.linzn.neuralFramework.voiceServer;
 import de.linzn.neuralFramework.NeuralFrameworkPlugin;
 import de.stem.stemSystem.STEMSystemApp;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.UUID;
@@ -22,22 +24,6 @@ public class VoiceServerClient implements Runnable {
         this.voiceClientPipelineStream = new VoiceClientPipelineStream(this, voiceServer.getModel());
     }
 
-    public synchronized void setEnable() {
-        this.voiceServer.voiceClients.put(this.uuid, this);
-        STEMSystemApp.getInstance().getScheduler().runTask(NeuralFrameworkPlugin.neuralFrameworkPlugin, this);
-    }
-
-    public synchronized void setDisable() {
-        this.closeConnection();
-    }
-
-
-    protected void readInput() throws IOException {
-        byte[] bytes = new byte[512];
-        this.socket.getInputStream().read(bytes, 0, 512);
-        this.voiceClientPipelineStream.pipedOutputStream.write(bytes);
-    }
-
 
     @Override
     public void run() {
@@ -50,6 +36,41 @@ public class VoiceServerClient implements Runnable {
             this.closeConnection();
         }
     }
+
+
+    public synchronized void setEnable() {
+        this.voiceServer.voiceClients.put(this.uuid, this);
+        STEMSystemApp.getInstance().getScheduler().runTask(NeuralFrameworkPlugin.neuralFrameworkPlugin, this);
+    }
+
+    public synchronized void setDisable() {
+        this.closeConnection();
+    }
+
+
+    protected void readInput() throws IOException {
+        byte[] bytes = new byte[1024];
+        int bytesRead = this.socket.getInputStream().read(bytes);
+        this.voiceClientPipelineStream.pipedOutputStream.write(bytes,0,bytesRead);
+    }
+
+    public void writeData(byte[] b, int off, int len) {
+        if (this.isValidConnection()) {
+            try {
+                BufferedOutputStream bOutStream = new BufferedOutputStream(this.socket.getOutputStream());
+                DataOutputStream dataOut = new DataOutputStream(bOutStream);
+                dataOut.write(b, off, len);
+                bOutStream.flush();
+            } catch (IOException e) {
+                STEMSystemApp.LOGGER.ERROR("Is already closed!");
+                closeConnection();
+            }
+
+        } else {
+            STEMSystemApp.LOGGER.ERROR("no connection");
+        }
+    }
+
 
     public synchronized void closeConnection() {
         if (!this.socket.isClosed()) {

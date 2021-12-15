@@ -39,7 +39,7 @@ public class VoiceClientPipelineStream implements Runnable {
         STEMSystemApp.LOGGER.CORE("Enable Pipeline for new voice connection");
         InputStream ais = this.pipedInputStream;
         STEMSystemApp.LOGGER.CORE("Loading VOSK-API Recognizer for new voice connection");
-        Recognizer recognizer = new Recognizer(model, 120000);
+        Recognizer recognizer = new Recognizer(model, 120000f);
         STEMSystemApp.LOGGER.CORE("VOSK-API enabled for new voice connection");
         while (voiceServerClient.isValidConnection()) {
             try {
