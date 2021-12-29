@@ -37,8 +37,8 @@ public class NeuralObject {
     }
 
     public void registerCombination(NeuralCombination neuralCombination, long taskId) {
-        if(neuralCombination != null) {
-            if(TaskDatabase.getTask(taskId) != null) {
+        if (neuralCombination != null) {
+            if (TaskDatabase.getTask(taskId) != null) {
                 this.neuralCombinationSet.add(neuralCombination);
                 this.taskAssignment.put(neuralCombination.GET_COMBINATION_ID(), taskId);
             } else {
@@ -50,7 +50,7 @@ public class NeuralObject {
     }
 
     public void registerLocation(NeuralLocation neuralLocation) {
-        if(neuralLocation != null) {
+        if (neuralLocation != null) {
             this.neuralLocationSet.add(neuralLocation);
         } else {
             STEMSystemApp.LOGGER.ERROR("NeuralLocation is NULL!");
@@ -58,7 +58,7 @@ public class NeuralObject {
     }
 
     public void ADD_NAME(String name) {
-        if(name != null && !name.isEmpty()) {
+        if (name != null && !name.isEmpty()) {
             this.nameSet.add(name.toLowerCase());
         } else {
             STEMSystemApp.LOGGER.ERROR("Name is NULL or EMPTY");

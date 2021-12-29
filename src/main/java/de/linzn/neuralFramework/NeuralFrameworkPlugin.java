@@ -13,7 +13,7 @@ package de.linzn.neuralFramework;
 
 
 import de.linzn.neuralFramework.neuralStructure.NeuralEngine;
-import de.linzn.neuralFramework.voiceServer.VoiceServer;
+import de.linzn.neuralFramework.voiceEngine.VoiceEngine;
 import de.stem.stemSystem.STEMSystemApp;
 import de.stem.stemSystem.modules.pluginModule.STEMPlugin;
 
@@ -21,32 +21,32 @@ public class NeuralFrameworkPlugin extends STEMPlugin {
 
     public static NeuralFrameworkPlugin neuralFrameworkPlugin;
     private NeuralEngine neuralEngine;
-    private VoiceServer voiceServer;
+    private VoiceEngine voiceEngine;
 
     @Override
     public void onEnable() {
         neuralFrameworkPlugin = this;
         this.neuralEngine = new NeuralEngine();
-        setupVoiceServer();
+        setupVoiceEngine();
         STEMSystemApp.getInstance().getEventModule().getStemEventBus().register(new TestListener());
     }
 
     @Override
     public void onDisable() {
-        this.voiceServer.closeServer();
+        this.voiceEngine.close();
         STEMSystemApp.getInstance().getCallBackService().unregisterCallbackListeners(this);
     }
 
-    private void setupVoiceServer() {
-        String host = this.getDefaultConfig().getString("voiceServer.host", "10.50.0.10");
-        int port = this.getDefaultConfig().getInt("voiceServer.port", 11105);
-        this.getDefaultConfig().save();
-
-        this.voiceServer = new VoiceServer(host, port);
-        this.voiceServer.openServer();
+    private void setupVoiceEngine() {
+        this.voiceEngine = new VoiceEngine(this);
+        this.voiceEngine.start();
     }
 
     public NeuralEngine getNeuralEngine() {
         return neuralEngine;
+    }
+
+    public VoiceEngine getVoiceEngine() {
+        return voiceEngine;
     }
 }

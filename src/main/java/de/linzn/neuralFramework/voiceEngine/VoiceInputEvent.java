@@ -1,4 +1,4 @@
-package de.linzn.neuralFramework.voiceServer;
+package de.linzn.neuralFramework.voiceEngine;
 
 import de.stem.stemSystem.modules.eventModule.StemEvent;
 import org.json.JSONObject;

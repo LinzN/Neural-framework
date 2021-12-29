@@ -1,31 +1,27 @@
-package de.linzn.neuralFramework.voiceServer;
+package de.linzn.neuralFramework.voiceEngine.stemLinkLite;
 
 import de.linzn.neuralFramework.NeuralFrameworkPlugin;
+import de.linzn.neuralFramework.voiceEngine.VoiceEngine;
+import de.linzn.neuralFramework.voiceEngine.stemBox.StemBoxClient;
+import de.linzn.neuralFramework.voiceEngine.stemBox.StemVoiceSocket;
 import de.stem.stemSystem.STEMSystemApp;
-import org.vosk.Model;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class VoiceServer implements Runnable {
 
     private final String host;
     private final int port;
-    ServerSocket server;
-    Map<UUID, VoiceServerClient> voiceClients;
-    private Model model;
+    private ServerSocket server;
+    private final VoiceEngine voiceEngine;
 
-    public VoiceServer(String host, int port) {
+    public VoiceServer(String host, int port, VoiceEngine voiceEngine) {
         this.host = host;
         this.port = port;
-        this.voiceClients = new HashMap<>();
-        this.loadModel();
+        this.voiceEngine = voiceEngine;
     }
 
 
@@ -42,25 +38,10 @@ public class VoiceServer implements Runnable {
     public void closeServer() {
         try {
             this.server.close();
-            ArrayList<UUID> uuidList = new ArrayList<>(this.voiceClients.keySet());
-            for (UUID uuid : uuidList) {
-                this.voiceClients.get(uuid).setDisable();
-            }
-            this.voiceClients.clear();
         } catch (IOException e) {
             STEMSystemApp.LOGGER.ERROR(e);
         }
 
-    }
-
-    private void loadModel() {
-        STEMSystemApp.LOGGER.CORE("Loading VOSK-API model start");
-        this.model = new Model(NeuralFrameworkPlugin.neuralFrameworkPlugin.getDataFolder().getAbsolutePath() + "/model");
-        STEMSystemApp.LOGGER.CORE("Loading VOSK-API model done");
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 
@@ -72,8 +53,19 @@ public class VoiceServer implements Runnable {
             try {
                 Socket socket = this.server.accept();
                 socket.setTcpNoDelay(true);
-                VoiceServerClient voiceServerClient = new VoiceServerClient(socket, this);
-                voiceServerClient.setEnable();
+                StemVoiceSocket stemVoiceSocket = new StemVoiceSocket(socket, this);
+                //int stemBoxId = stemVoiceSocket.read_stemBox_data();
+                int stemBoxId = 1;
+                if (stemBoxId != -1) {
+                    StemBoxClient stemBoxClient = this.voiceEngine.getStemBoxVoiceClient(stemBoxId);
+                    if (stemBoxClient != null) {
+                        stemBoxClient.setStemVoiceSocket(stemVoiceSocket);
+                    } else {
+                        stemVoiceSocket.closeConnection();
+                    }
+                } else {
+                    stemVoiceSocket.closeConnection();
+                }
             } catch (IOException e) {
                 STEMSystemApp.LOGGER.ERROR("VoiceServerClient already closed!");
             }
