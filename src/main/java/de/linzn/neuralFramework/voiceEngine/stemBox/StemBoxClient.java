@@ -11,6 +11,8 @@ import org.vosk.Model;
 import org.vosk.Recognizer;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -81,10 +83,13 @@ public class StemBoxClient implements Runnable {
                 }
                 if (this.stemVoiceSocket != null) {
                     this.setStemVoiceSocket(null);
-                    STEMSystemApp.LOGGER.INFO("Clearing and reset recognizer!");
-                    this.recognizer.reset();
+                    this.cleanRecognizer(false);
                 }
                 Thread.sleep(500);
+            } catch (SocketTimeoutException | SocketException ignored) {
+                STEMSystemApp.LOGGER.INFO("SocketException/SocketTimeout. Closing Socket!");
+                this.setStemVoiceSocket(null);
+                this.cleanRecognizer(false);
             } catch (IOException | InterruptedException e) {
                 STEMSystemApp.LOGGER.ERROR(e);
             }
@@ -94,8 +99,7 @@ public class StemBoxClient implements Runnable {
         if (this.stemVoiceSocket != null) {
             this.setStemVoiceSocket(null);
         }
-        recognizer.reset();
-        recognizer.close();
+        this.cleanRecognizer(true);
     }
 
     public boolean isValidSocket() {
@@ -133,6 +137,15 @@ public class StemBoxClient implements Runnable {
             STEMSystemApp.LOGGER.INFO("Closing stemLink voice client and set to NULL!");
             this.stemVoiceSocket.closeConnection();
             this.stemVoiceSocket = null;
+        }
+    }
+
+    public void cleanRecognizer(boolean close) {
+        STEMSystemApp.LOGGER.INFO("Clearing and reset recognizer!");
+        recognizer.reset();
+        if (close) {
+            STEMSystemApp.LOGGER.INFO("Closing recognizer!");
+            recognizer.close();
         }
     }
 

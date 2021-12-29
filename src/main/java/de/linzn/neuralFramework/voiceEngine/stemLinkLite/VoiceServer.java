@@ -53,6 +53,7 @@ public class VoiceServer implements Runnable {
             try {
                 Socket socket = this.server.accept();
                 socket.setTcpNoDelay(true);
+                socket.setSoTimeout(5000);
                 StemVoiceSocket stemVoiceSocket = new StemVoiceSocket(socket, this);
                 int stemBoxId = stemVoiceSocket.read_stemBox_data();
 
