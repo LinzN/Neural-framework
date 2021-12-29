@@ -54,16 +54,18 @@ public class VoiceServer implements Runnable {
                 Socket socket = this.server.accept();
                 socket.setTcpNoDelay(true);
                 StemVoiceSocket stemVoiceSocket = new StemVoiceSocket(socket, this);
-                //int stemBoxId = stemVoiceSocket.read_stemBox_data();
-                int stemBoxId = 1;
+                int stemBoxId = stemVoiceSocket.read_stemBox_data();
+
                 if (stemBoxId != -1) {
                     StemBoxClient stemBoxClient = this.voiceEngine.getStemBoxVoiceClient(stemBoxId);
                     if (stemBoxClient != null) {
                         stemBoxClient.setStemVoiceSocket(stemVoiceSocket);
                     } else {
+                        STEMSystemApp.LOGGER.ERROR("Closing VoiceServerClient because no client exist with this id");
                         stemVoiceSocket.closeConnection();
                     }
                 } else {
+                    STEMSystemApp.LOGGER.ERROR("No Id transmitted");
                     stemVoiceSocket.closeConnection();
                 }
             } catch (IOException e) {

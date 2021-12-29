@@ -1,6 +1,7 @@
 package de.linzn.neuralFramework.voiceEngine.stemBox;
 
 import de.linzn.neuralFramework.voiceEngine.stemLinkLite.VoiceServer;
+import de.stem.stemSystem.STEMSystemApp;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -28,10 +29,10 @@ public class StemVoiceSocket {
 
             if (channel.equalsIgnoreCase("stemBoxId")) {
                 stemBoxId = dataInput.readInt();
+                STEMSystemApp.LOGGER.CONFIG("Getting stemBoxId " + stemBoxId);
+            } else {
+                STEMSystemApp.LOGGER.ERROR("Unknown channel header");
             }
-
-            bInStream.close();
-            dataInput.close();
 
         } catch (IOException e) {
             e.printStackTrace();
