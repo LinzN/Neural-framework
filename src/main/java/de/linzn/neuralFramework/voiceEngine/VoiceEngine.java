@@ -2,7 +2,7 @@ package de.linzn.neuralFramework.voiceEngine;
 
 import de.linzn.neuralFramework.NeuralFrameworkPlugin;
 import de.linzn.neuralFramework.voiceEngine.stemBox.StemBoxClient;
-import de.linzn.neuralFramework.voiceEngine.stemLinkLite.VoiceServer;
+import de.linzn.neuralFramework.voiceEngine.stemLinkVoice.VoiceServer;
 import de.stem.stemSystem.STEMSystemApp;
 import org.vosk.Model;
 

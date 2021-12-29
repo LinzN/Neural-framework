@@ -5,11 +5,12 @@ import de.linzn.neuralFramework.neuralStructure.NeuralProcessor;
 import de.linzn.neuralFramework.voiceEngine.VoiceEngine;
 import de.linzn.neuralFramework.voiceEngine.VoiceInputEvent;
 import de.stem.stemSystem.STEMSystemApp;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -22,7 +23,7 @@ public class StemBoxClient implements Runnable {
     private final Recognizer recognizer;
     private final AtomicBoolean keywordSpotted;
     private final AtomicBoolean running;
-    private VoiceEngine voiceEngine;
+    private final VoiceEngine voiceEngine;
     private StemVoiceSocket stemVoiceSocket;
 
     public StemBoxClient(int stemBoxId, Model model, float sampleRate, VoiceEngine voiceEngine) {
@@ -162,11 +163,16 @@ public class StemBoxClient implements Runnable {
         if (this.keywordSpotted.get() != value) {
             this.keywordSpotted.set(value);
             STEMSystemApp.LOGGER.CORE("KeywordSpotted set to " + value);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("command", "RECORDING");
-            jsonObject.put("status", this.keywordSpotted.get() ? "START" : "STOP");
-            MqttMessage mqttMessage = new MqttMessage(jsonObject.toString().getBytes());
-            STEMSystemApp.getInstance().getMqttModule().publish("stemBox/device_" + this.stemBoxId + "/callback", mqttMessage);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            try {
+                dataOutputStream.writeInt(this.stemBoxId);
+                dataOutputStream.writeUTF("RECORDING");
+                dataOutputStream.writeUTF(this.keywordSpotted.get() ? "START" : "STOP");
+            } catch (IOException e) {
+                STEMSystemApp.LOGGER.ERROR(e);
+            }
+            STEMSystemApp.getInstance().getStemLinkModule().getStemLinkServer().getClients().values().forEach(serverConnection -> serverConnection.writeOutput("stembox_client", byteArrayOutputStream.toByteArray()));
         }
     }
 

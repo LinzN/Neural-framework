@@ -1,4 +1,4 @@
-package de.linzn.neuralFramework.voiceEngine.stemLinkLite;
+package de.linzn.neuralFramework.voiceEngine.stemLinkVoice;
 
 import de.linzn.neuralFramework.NeuralFrameworkPlugin;
 import de.linzn.neuralFramework.voiceEngine.VoiceEngine;

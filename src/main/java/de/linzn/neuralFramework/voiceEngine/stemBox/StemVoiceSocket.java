@@ -1,6 +1,6 @@
 package de.linzn.neuralFramework.voiceEngine.stemBox;
 
-import de.linzn.neuralFramework.voiceEngine.stemLinkLite.VoiceServer;
+import de.linzn.neuralFramework.voiceEngine.stemLinkVoice.VoiceServer;
 import de.stem.stemSystem.STEMSystemApp;
 
 import java.io.BufferedInputStream;
