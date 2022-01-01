@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.UUID;
 
 public class StemVoiceSocket {
     private final Socket socket;
@@ -19,17 +20,17 @@ public class StemVoiceSocket {
         this.voiceServer = voiceServer;
     }
 
-    public int read_stemBox_data() {
-        int stemBoxId = -1;
+    public UUID read_stemBox_data() {
+        UUID stemBoxUUID = null;
         try {
             BufferedInputStream bInStream = new BufferedInputStream(this.socket.getInputStream());
             DataInputStream dataInput = new DataInputStream(bInStream);
 
             String channel = dataInput.readUTF();
 
-            if (channel.equalsIgnoreCase("stemBoxId")) {
-                stemBoxId = dataInput.readInt();
-                STEMSystemApp.LOGGER.CONFIG("Getting stemBoxId " + stemBoxId);
+            if (channel.equalsIgnoreCase("stemBox_uuid")) {
+                stemBoxUUID = UUID.fromString(dataInput.readUTF());
+                STEMSystemApp.LOGGER.CONFIG("Getting stemBoxUUID " + stemBoxUUID);
             } else {
                 STEMSystemApp.LOGGER.ERROR("Unknown channel header");
             }
@@ -37,7 +38,7 @@ public class StemVoiceSocket {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return stemBoxId;
+        return stemBoxUUID;
     }
 
     public synchronized InputStream getInStream() throws IOException {

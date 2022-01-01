@@ -4,6 +4,7 @@ import de.linzn.neuralFramework.NeuralFrameworkPlugin;
 import de.linzn.neuralFramework.neuralStructure.NeuralProcessor;
 import de.linzn.neuralFramework.voiceEngine.VoiceEngine;
 import de.linzn.neuralFramework.voiceEngine.VoiceInputEvent;
+import de.linzn.stemLink.connections.server.ServerConnection;
 import de.stem.stemSystem.STEMSystemApp;
 import org.json.JSONObject;
 import org.vosk.Model;
@@ -15,20 +16,21 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StemBoxClient implements Runnable {
 
-    private final int stemBoxId;
+    private final UUID stemBoxUUID;
     private final Recognizer recognizer;
     private final AtomicBoolean keywordSpotted;
     private final AtomicBoolean running;
     private final VoiceEngine voiceEngine;
     private StemVoiceSocket stemVoiceSocket;
 
-    public StemBoxClient(int stemBoxId, Model model, float sampleRate, VoiceEngine voiceEngine) {
+    public StemBoxClient(UUID stemBoxUUID, Model model, float sampleRate, VoiceEngine voiceEngine) {
         this.recognizer = new Recognizer(model, sampleRate);
-        this.stemBoxId = stemBoxId;
+        this.stemBoxUUID = stemBoxUUID;
         this.keywordSpotted = new AtomicBoolean(false);
         this.running = new AtomicBoolean(true);
         this.voiceEngine = voiceEngine;
@@ -155,8 +157,8 @@ public class StemBoxClient implements Runnable {
         this.running.set(false);
     }
 
-    public int getStemBoxId() {
-        return stemBoxId;
+    public UUID getStemBoxUUID() {
+        return stemBoxUUID;
     }
 
     private void setKeywordSpotted(boolean value) {
@@ -166,13 +168,18 @@ public class StemBoxClient implements Runnable {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
             try {
-                dataOutputStream.writeInt(this.stemBoxId);
+                dataOutputStream.writeUTF(this.stemBoxUUID.toString());
                 dataOutputStream.writeUTF("RECORDING");
                 dataOutputStream.writeUTF(this.keywordSpotted.get() ? "START" : "STOP");
             } catch (IOException e) {
                 STEMSystemApp.LOGGER.ERROR(e);
             }
-            STEMSystemApp.getInstance().getStemLinkModule().getStemLinkServer().getClients().values().forEach(serverConnection -> serverConnection.writeOutput("stembox_client", byteArrayOutputStream.toByteArray()));
+            ServerConnection serverConnection = STEMSystemApp.getInstance().getStemLinkModule().getStemLinkServer().getClient(this.stemBoxUUID);
+            if(serverConnection != null){
+                serverConnection.writeOutput("stembox_client", byteArrayOutputStream.toByteArray());
+            } else {
+                STEMSystemApp.LOGGER.ERROR("No stemLink client found with that UUID");
+            }
         }
     }
 

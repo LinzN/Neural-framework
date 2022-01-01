@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.UUID;
 
 public class VoiceServer implements Runnable {
 
@@ -55,18 +56,18 @@ public class VoiceServer implements Runnable {
                 socket.setTcpNoDelay(true);
                 socket.setSoTimeout(5000);
                 StemVoiceSocket stemVoiceSocket = new StemVoiceSocket(socket, this);
-                int stemBoxId = stemVoiceSocket.read_stemBox_data();
+                UUID stemBoxUUID = stemVoiceSocket.read_stemBox_data();
 
-                if (stemBoxId != -1) {
-                    StemBoxClient stemBoxClient = this.voiceEngine.getStemBoxVoiceClient(stemBoxId);
+                if (stemBoxUUID != null) {
+                    StemBoxClient stemBoxClient = this.voiceEngine.getStemBoxVoiceClient(stemBoxUUID);
                     if (stemBoxClient != null) {
                         stemBoxClient.setStemVoiceSocket(stemVoiceSocket);
                     } else {
-                        STEMSystemApp.LOGGER.ERROR("Closing VoiceServerClient because no client exist with this id");
+                        STEMSystemApp.LOGGER.ERROR("Closing VoiceServerClient because no client exist with this uuid");
                         stemVoiceSocket.closeConnection();
                     }
                 } else {
-                    STEMSystemApp.LOGGER.ERROR("No Id transmitted");
+                    STEMSystemApp.LOGGER.ERROR("No UUID transmitted");
                     stemVoiceSocket.closeConnection();
                 }
             } catch (IOException e) {
