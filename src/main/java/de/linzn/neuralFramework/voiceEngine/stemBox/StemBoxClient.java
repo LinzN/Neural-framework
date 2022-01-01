@@ -168,14 +168,17 @@ public class StemBoxClient implements Runnable {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
             try {
-                dataOutputStream.writeUTF(this.stemBoxUUID.toString());
-                dataOutputStream.writeUTF("RECORDING");
-                dataOutputStream.writeUTF(this.keywordSpotted.get() ? "START" : "STOP");
+                dataOutputStream.writeUTF("update-box-status");
+                if (this.keywordSpotted.get()) {
+                    dataOutputStream.writeUTF("listening");
+                } else {
+                    dataOutputStream.writeUTF("idle");
+                }
             } catch (IOException e) {
                 STEMSystemApp.LOGGER.ERROR(e);
             }
             ServerConnection serverConnection = STEMSystemApp.getInstance().getStemLinkModule().getStemLinkServer().getClient(this.stemBoxUUID);
-            if(serverConnection != null){
+            if (serverConnection != null) {
                 serverConnection.writeOutput("stembox_client", byteArrayOutputStream.toByteArray());
             } else {
                 STEMSystemApp.LOGGER.ERROR("No stemLink client found with that UUID");
