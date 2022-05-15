@@ -4,6 +4,7 @@ import de.linzn.neuralFramework.neuralStructure.objects.NeuralCombination;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralLocation;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralObject;
 import de.stem.stemSystem.STEMSystemApp;
+import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -135,6 +136,15 @@ public class NeuralDatabaseLoader {
                     STEMSystemApp.LOGGER.CORE("Register combination_id: " + innerResult.getInt("combination_id") + " static_task_id: " + innerResult.getInt("static_task_id") + " for object_id: " + neuralObject.GET_OBJECT_ID());
                     neuralObject.registerCombination(neuralDatabase.getCombination(innerResult.getInt("combination_id")), innerResult.getInt("static_task_id"));
                 }
+
+                innerQuery = ("SELECT * FROM `neural_object_combination_location_assignment` where `object_id`= '" + neuralObject.GET_OBJECT_ID() + "';");
+                innerResult = innerStatement.executeQuery(innerQuery);
+
+                while (innerResult.next()) {
+                    STEMSystemApp.LOGGER.CORE("Set location combination data combination_id: " + innerResult.getInt("combination_id") +" location_id: "+ innerResult.getInt("location_id") + " for object_id: " + neuralObject.GET_OBJECT_ID());
+                    neuralObject.addCombinationLocationData(neuralDatabase.getCombination(innerResult.getInt("combination_id")), neuralDatabase.getLocation(innerResult.getInt("location_id")), new JSONObject(innerResult.getString("data")));
+                }
+
                 neuralDatabase.addObject(neuralObject);
                 innerResult.close();
                 innerStatement.close();

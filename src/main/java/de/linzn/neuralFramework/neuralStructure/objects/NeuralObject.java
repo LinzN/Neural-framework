@@ -2,7 +2,9 @@ package de.linzn.neuralFramework.neuralStructure.objects;
 
 import de.linzn.neuralFramework.neuralStructure.NeuralTask;
 import de.linzn.neuralFramework.neuralStructure.TaskDatabase;
+import de.linzn.openJL.pairs.Pair;
 import de.stem.stemSystem.STEMSystemApp;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ public class NeuralObject {
     private final Set<NeuralCombination> neuralCombinationSet;
     private final Set<NeuralLocation> neuralLocationSet;
     private final HashMap<Long, Long> taskAssignment;
+    private final HashMap<Pair<NeuralLocation,NeuralCombination>, JSONObject> neuralLocationCombinationData;
     private final Set<String> nameSet;
 
     public NeuralObject(long id) {
@@ -22,6 +25,7 @@ public class NeuralObject {
         this.neuralLocationSet = new HashSet<>();
         this.nameSet = new HashSet<>();
         this.taskAssignment = new HashMap<>();
+        this.neuralLocationCombinationData = new HashMap<>();
     }
 
     public boolean hasCombination(NeuralCombination neuralCombination) {
@@ -55,6 +59,19 @@ public class NeuralObject {
         } else {
             STEMSystemApp.LOGGER.ERROR("NeuralLocation is NULL!");
         }
+    }
+
+    public void addCombinationLocationData(NeuralCombination neuralCombination, NeuralLocation neuralLocation, JSONObject data){
+        this.neuralLocationCombinationData.put(new Pair<>(neuralLocation, neuralCombination), data);
+    }
+
+    public JSONObject getCombinationLocationData(NeuralCombination neuralCombination, NeuralLocation neuralLocation){
+        for(Pair<NeuralLocation,NeuralCombination> pair : this.neuralLocationCombinationData.keySet()){
+            if(pair.getKey() == neuralLocation && pair.getValue() == neuralCombination){
+                return this.neuralLocationCombinationData.get(pair);
+            }
+        }
+        return null;
     }
 
     public void ADD_NAME(String name) {

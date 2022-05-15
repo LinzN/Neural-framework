@@ -24,6 +24,7 @@ public class NeuralProcessor {
         NeuralCombination neuralCombination = null;
         NeuralLocation neuralLocation = null;
         NeuralTask neuralTask = null;
+        JSONObject combinationLocationData = null;
 
         searchLoop:
         for (String word : input) {
@@ -72,8 +73,11 @@ public class NeuralProcessor {
             return;
         }
 
+        combinationLocationData = neuralObject.getCombinationLocationData(neuralCombination, neuralLocation);
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("words", input);
+        jsonObject.put("data", combinationLocationData);
 
         try {
             neuralTask.runTask(neuralObject, neuralCombination, neuralLocation, jsonObject);
