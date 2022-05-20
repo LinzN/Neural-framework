@@ -15,13 +15,17 @@ public class LightOff implements NeuralTask {
 
     @Override
     public void runTask(NeuralObject neuralObject, NeuralCombination neuralCombination, NeuralLocation neuralLocation, JSONObject otherInput) {
-        String deviceConfigName = otherInput.getJSONObject("data").getString("device_name");
+        if(otherInput.has("data")) {
+            String deviceConfigName = otherInput.getJSONObject("data").getString("device_name");
 
-        SwitchableMQTTDevice switchableMQTTDevice = HomeDevicesPlugin.homeDevicesPlugin.getSwitchableMQTTDevice(deviceConfigName);
-        switchableMQTTDevice.switchDevice(false);
-        jsonObject.put("text", "Device switched to status " + false);
-        jsonObject.put("success", true);
-        this.wasSuccess = true;
+            SwitchableMQTTDevice switchableMQTTDevice = HomeDevicesPlugin.homeDevicesPlugin.getSwitchableMQTTDevice(deviceConfigName);
+            switchableMQTTDevice.switchDevice(false);
+            jsonObject.put("text", "Device switched to status " + false);
+            jsonObject.put("success", true);
+            this.wasSuccess = true;
+        } else {
+            jsonObject.put("success", false);
+        }
     }
 
     @Override
