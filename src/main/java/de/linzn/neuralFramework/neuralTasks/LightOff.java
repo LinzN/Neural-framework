@@ -1,7 +1,7 @@
 package de.linzn.neuralFramework.neuralTasks;
 
 import de.linzn.homeDevices.HomeDevicesPlugin;
-import de.linzn.homeDevices.devices.switches.SwitchableMQTTDevice;
+import de.linzn.homeDevices.devices.interfaces.MqttSwitch;
 import de.linzn.neuralFramework.neuralStructure.NeuralTask;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralCombination;
 import de.linzn.neuralFramework.neuralStructure.objects.NeuralLocation;
@@ -18,7 +18,7 @@ public class LightOff implements NeuralTask {
         if(otherInput.has("data")) {
             String deviceConfigName = otherInput.getJSONObject("data").getString("device_name");
 
-            SwitchableMQTTDevice switchableMQTTDevice = HomeDevicesPlugin.homeDevicesPlugin.getSwitchableMQTTDevice(deviceConfigName);
+            MqttSwitch switchableMQTTDevice = (MqttSwitch) HomeDevicesPlugin.homeDevicesPlugin.getDeviceManager().getMqttDevice(deviceConfigName);
             switchableMQTTDevice.switchDevice(false);
             jsonObject.put("text", "Device switched to status " + false);
             jsonObject.put("success", true);
