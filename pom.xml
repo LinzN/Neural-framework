@@ -16,8 +16,8 @@
     <name>neural-framework</name>
     <repositories>
         <repository>
-            <id>enigmar-repo</id>
-            <url>https://repository.enigmar.de/</url>
+            <id>Stem Builds Repository</id>
+            <url>https://builds.app.stem-system.de/plugin/repository/everything/</url>
         </repository>
         <repository>
             <id>alphacephei-repo</id>
@@ -82,28 +82,28 @@
             </plugin>
         </plugins>
     </build>
-    <version>0.0.1</version>
+    <version>1.0-SNAPSHOT</version>
     <artifactId>neural-framework</artifactId>
     <dependencies>
         <dependency>
             <groupId>de.stem</groupId>
             <artifactId>stem-system</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>5.7.0</version>
+            <version>5.12.1</version>
         </dependency>
         <dependency>
             <groupId>com.alphacephei</groupId>
             <artifactId>vosk</artifactId>
-            <version>0.3.31</version>
+            <version>0.3.38</version>
         </dependency>
         <dependency>
             <groupId>de.stem.plugins</groupId>
             <artifactId>home-devices</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>
