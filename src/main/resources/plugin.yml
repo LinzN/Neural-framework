@@ -2,3 +2,5 @@ main: de.linzn.neuralFramework.NeuralFrameworkPlugin
 name: neural-framework
 version: ${project.version}
 depend: [ home-devices ]
+buildJobName: ${buildServer.jobName}
+buildNumber: ${buildServer.buildNumber}
